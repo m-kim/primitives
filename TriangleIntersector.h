@@ -62,7 +62,7 @@ public:
     VTKM_EXEC
     vtkm::Float32 rcp_safe(vtkm::Float32 f) const { return rcp((fabs(f) < 1e-8f) ? 1e-8f : f); }
   public:
-    VTKM_CONT_EXPORT
+	  VTKM_CONT
     Intersector(bool occlusion,
                 vtkm::Float32 maxDistance,
         const vtkm::cont::DynamicCellSet *cellset)
@@ -395,7 +395,7 @@ public:
 
 
 
-  VTKM_CONT_EXPORT
+VTKM_CONT
   void run(Ray<DeviceAdapter> &rays,
            const vtkm::cont::DynamicCellSet *cells,
            vtkm::cont::DynamicArrayHandleCoordinateSystem coordsHandle,

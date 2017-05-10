@@ -30,7 +30,15 @@ PATHS "/home/mkim/local/vtkm/debug//lib"
   )
 
 if(VTKm_Rendering_FOUND)
-  add_executable(parametric_rendering main.cpp Camera.h Ray.h TriangleIntersector.h RayTracer.h MapperRayTracer.cxx)
+  add_executable(parametric_rendering 
+	main.cpp 
+	Camera.h
+	Tree.h
+	TreeIntersector.h
+	Ray.h 
+	TriangleIntersector.h 
+	RayTracer.h 
+	MapperRayTracer.cxx)
   target_include_directories(parametric_rendering PRIVATE 	${VTKm_INCLUDE_DIRS})
   target_link_libraries(parametric_rendering ${VTKm_LIBRARIES})
   target_compile_options(parametric_rendering PRIVATE ${VTKm_COMPILE_OPTIONS})

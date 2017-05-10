@@ -33,7 +33,7 @@
 class IntersectionPoint : public vtkm::worklet::WorkletMapField
 {
 public:
-  VTKM_CONT_EXPORT
+	VTKM_CONT
   IntersectionPoint() {}
   typedef void ControlSignature(FieldIn<>,
                                 FieldIn<>,
@@ -80,7 +80,7 @@ public:
 
     IndicesArrayPortal IndicesPortal;
   public:
-    VTKM_CONT_EXPORT
+	  VTKM_CONT
     CalculateNormals(const Vec4IntArrayHandle &indices)
       : IndicesPortal( indices.PrepareForInput( DeviceAdapter() ) )
     {}
@@ -133,7 +133,7 @@ public:
     vtkm::Float32 invDeltaScalar;
   public:
 
-    VTKM_CONT_EXPORT
+	  VTKM_CONT
     LerpScalar(const Vec4IntArrayHandle &indices,
                  const vtkm::Float32 &minScalar,
                  const vtkm::Float32 &maxScalar)
@@ -189,7 +189,7 @@ public:
     vtkm::Float32 invDeltaScalar;
   public:
 
-    VTKM_CONT_EXPORT
+	  VTKM_CONT
     NodalScalar(const Vec4IntArrayHandle &indices,
                 const vtkm::Float32 &minScalar,
                 const vtkm::Float32 &maxScalar)
@@ -225,7 +225,7 @@ public:
     }
   }; //class LerpScalar
 
-  VTKM_CONT_EXPORT
+  VTKM_CONT
   void run(Ray<DeviceAdapter> &rays,
            vtkm::cont::DynamicArrayHandleCoordinateSystem &coordsHandle,
            const vtkm::cont::Field *scalarField,
@@ -289,7 +289,7 @@ public:
     vtkm::Vec<vtkm::Float32,4> BackgroundColor;
   public:
 
-    VTKM_CONT_EXPORT
+	  VTKM_CONT
     MapScalarToColor(const ColorArrayHandle &colorMap,
                      const vtkm::Int32 &colorMapSize,
                      const vtkm::Vec<vtkm::Float32,3> &lightPosition,
@@ -363,7 +363,7 @@ public:
     }
   }; //class MapScalarToColor
 
-  VTKM_CONT_EXPORT
+  VTKM_CONT
   void run(Ray<DeviceAdapter> &rays,
            vtkm::cont::ArrayHandle<vtkm::Vec<vtkm::Float32,4> > &colorMap,
 		   vtkm::rendering::raytracing::ColorBuffer4f &colorBuffer,
@@ -410,25 +410,25 @@ protected:
   vtkm::Bounds DataBounds;
   vtkm::Vec<vtkm::Float32,4> BackgroundColor;
 public:
-  VTKM_CONT_EXPORT
+	VTKM_CONT
   RayTracer()
   {
     IsSceneDirty = true;
   }
 
-  VTKM_CONT_EXPORT
+  VTKM_CONT
   void SetBackgroundColor(const vtkm::Vec<vtkm::Float32,4> &backgroundColor)
   {
     BackgroundColor = backgroundColor;
   }
 
-  VTKM_CONT_EXPORT
+  VTKM_CONT
   Camera<DeviceAdapter>& GetCamera()
   {
     return camera;
   }
 
-  VTKM_CONT_EXPORT
+  VTKM_CONT
   void SetData(const vtkm::cont::DynamicArrayHandleCoordinateSystem &coordsHandle,
                const vtkm::cont::ArrayHandle< vtkm::Vec<vtkm::Id, 4> >  &indices,
                const vtkm::cont::Field &scalarField,
@@ -451,20 +451,20 @@ public:
     treePtr = tp;
   }
 
-  VTKM_CONT_EXPORT
+  VTKM_CONT
   void SetColorMap(const vtkm::cont::ArrayHandle<vtkm::Vec<vtkm::Float32,4> > &colorMap)
   {
     ColorMap = colorMap;
   }
 
-  VTKM_CONT_EXPORT
+  VTKM_CONT
   void Init()
   {
     camera.CreateRays(Rays, DataBounds);
     IsSceneDirty = false;
   }
 
-  VTKM_CONT_EXPORT
+  VTKM_CONT
   void Render(vtkm::rendering::CanvasRayTracer *canvas)
   {
     vtkm::cont::Timer<DeviceAdapter> renderTimer;

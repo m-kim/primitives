@@ -39,13 +39,13 @@ struct MapperRayTracer::InternalsType
   std::shared_ptr<vtkm::cont::internal::SimplePolymorphicContainerBase>
       TreeContainer;
 
-  VTKM_CONT_EXPORT
+  VTKM_CONT
   InternalsType()
     : Canvas(nullptr)
   {  }
 
   template<typename Device>
-  VTKM_CONT_EXPORT
+  VTKM_CONT
   RayTracer<Device> *GetRayTracer(Device)
   {
     VTKM_IS_DEVICE_ADAPTER_TAG(Device);
@@ -76,7 +76,7 @@ struct MapperRayTracer::InternalsType
   }
 
   template<typename DeviceAdapter>
-  VTKM_CONT_EXPORT
+  VTKM_CONT
   Tree<DeviceAdapter> *GetTree(DeviceAdapter)
   {
     VTKM_IS_DEVICE_ADAPTER_TAG(DeviceAdapter);
@@ -156,7 +156,7 @@ struct MapperRayTracer::RenderFunctor
   vtkm::cont::ArrayHandle<vtkm::UInt32 > CntArray;
   vtkm::cont::ArrayHandle<vtkm::UInt32 > IdxArray;
   vtkm::cont::ArrayHandle<vtkm::UInt32 > VtxArray;
-  VTKM_CONT_EXPORT
+  VTKM_CONT
   RenderFunctor(MapperRayTracer *self,
                 const vtkm::cont::ArrayHandle<vtkm::Vec<vtkm::Id,4> > &indices,
                 vtkm::Id numberOfTriangles,
