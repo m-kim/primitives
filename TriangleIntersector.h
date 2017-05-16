@@ -72,6 +72,10 @@ public:
     {
     vtkm::cont::CellSetExplicit<> cellSetExplicit = Cells->Cast<vtkm::cont::CellSetExplicit<> >();
         ShapesPortal = cellSetExplicit.GetShapesArray(vtkm::TopologyElementTagPoint(), vtkm::TopologyElementTagCell()).GetPortalConstControl();
+
+		vtkm::cont::ArrayHandle<vtkm::UInt8> shps = cellSetExplicit.GetShapesArray(vtkm::TopologyElementTagPoint(), vtkm::TopologyElementTagCell());
+		tIPtr.SetShapes(shps);
+
         //const vtkm::cont::ArrayHandle<vtkm::Int32> indices = cellSetExplicit.GetNumIndicesArray(vtkm::TopologyElementTagPoint(), vtkm::TopologyElementTagCell());
         //vtkm::cont::ArrayHandle<vtkm::Id> conn = cellSetExplicit.GetConnectivityArray(vtkm::TopologyElementTagPoint(), vtkm::TopologyElementTagCell());
 
@@ -82,6 +86,8 @@ public:
 
         OffsetsPortal = cellSetExplicit.GetIndexOffsetArray(vtkm::TopologyElementTagPoint(), vtkm::TopologyElementTagCell()).GetPortalConstControl();
 
+		vtkm::cont::ArrayHandle<vtkm::Id> indx = cellSetExplicit.GetIndexOffsetArray(vtkm::TopologyElementTagPoint(), vtkm::TopologyElementTagCell());
+		tIPtr.SetOffset(indx);
 
     }
     typedef void ControlSignature(FieldIn<>,
@@ -211,7 +217,7 @@ public:
         }
 
 #else
-    tIPtr.query(ShapesPortal, OffsetsPortal, points, scalars, rayOrigin, rayDir, fin_type, face,fin_offset, fin_center, minDistance, hitIndex, tree);
+    tIPtr.query(points, scalars, rayOrigin, rayDir, fin_type, face,fin_offset, fin_center, minDistance, hitIndex, tree);
 //    vtkm::UInt8 tree_fin_type = 0;
 //    vtkm::UInt8 tree_face = 0;
 //    vtkm::Id tree_fin_offset = 0, tree_hitIndex;

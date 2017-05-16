@@ -4,7 +4,7 @@
 #include "Tree.h"
 
 template <typename DeviceAdapterTag>
-class TreeIntersector
+class TreeIntersector : public vtkm::exec::ExecutionObjectBase
 {
 public:
   enum CSG_TYPE{
@@ -14,6 +14,13 @@ public:
     SPHERE = vtkm::CELL_SHAPE_VERTEX
   };
 
+  typedef typename vtkm::cont::ArrayHandle<vtkm::UInt8>
+	  ::template ExecutionTypes<DeviceAdapterTag>::Portal PortalShapeType;
+
+  typedef typename vtkm::cont::ArrayHandle<vtkm::Id>
+	  ::template ExecutionTypes<DeviceAdapterTag>::Portal PortalIndexType;
+
+
   typedef typename Tree<DeviceAdapterTag>::vec3 vec3;
 
   VTKM_EXEC_CONT
@@ -21,6 +28,24 @@ public:
   {
   }
 
+  VTKM_EXEC_CONT
+	  TreeIntersector(const TreeIntersector &rhs) :ShapesPortal(rhs.ShapesPortal), OffsetsPortal(rhs.OffsetsPortal)
+  {
+
+  }
+
+  VTKM_CONT
+  void SetOffset(vtkm::cont::ArrayHandle<vtkm::Id> &offsetsPortal)
+  {
+	  OffsetsPortal = offsetsPortal.PrepareForInPlace(DeviceAdapterTag());
+	  
+  }
+
+  VTKM_CONT
+  void SetShapes(vtkm::cont::ArrayHandle<vtkm::UInt8> &shapesPortal)
+  {
+	  ShapesPortal = shapesPortal.PrepareForInPlace(DeviceAdapterTag());
+  }
   VTKM_EXEC_CONT
   vec3 cylinder(const vec3 &ray_start,
       const vec3 &ray_direction,
@@ -180,12 +205,9 @@ t = (nd - mn) / nn;
     return vec3(1.0, t, 0);
   }
 
-  VTKM_EXEC
   template<typename PointPortalType, typename ScalarPortalType>
-  void query(
-          const vtkm::cont::ArrayHandle<vtkm::UInt8>::PortalConstControl ShapesPortal,
-          const vtkm::cont::ArrayHandle<vtkm::Id>::PortalConstControl OffsetsPortal,
-
+  VTKM_EXEC
+	  void query(
             const PointPortalType &points,
             const ScalarPortalType &scalars,
             const vtkm::Vec<vtkm::Float32, 3> &rayOrigin,
@@ -333,6 +355,9 @@ t = (nd - mn) / nn;
       }
 
   }
+
+  PortalShapeType ShapesPortal;
+  PortalIndexType OffsetsPortal;
 
 };
 
