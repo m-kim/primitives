@@ -21,37 +21,38 @@ vtkm::cont::DataSet csg;
 std::vector<vtkm::UInt32> child_idx, child_cnt, child_vtx, child_idx_vtx;
 std::shared_ptr<Tree<DeviceAdapter>> treePtr;
 vtkm::cont::DataSetFieldAdd dataSetFieldAdd;
-vtkm::cont::ArrayHandle<vtkm::UInt32 > cntArray, vtxArray,idxArray;
+vtkm::cont::ArrayHandle<vtkm::UInt32 > cntArray, vtxArray, idxArray;
 vtkm::rendering::View3D *view;
 
 void load(const char *fn)
 {
-    vtkm::io::reader::VTKDataSetReader reader(fn);
-    reader.ReadDataSet();
-    csg = reader.GetDataSet();
+	vtkm::io::reader::VTKDataSetReader reader(fn);
+	reader.ReadDataSet();
+	csg = reader.GetDataSet();
 	std::cout << "finished reader" << std::endl;
-    std::ifstream cntf;
-    cntf.open("count.dat");
-    size_t size = 0;
-    cntf.read((char*)&size, sizeof(size_t));
-    child_cnt.resize(size);
-    cntf.read((char*)&child_cnt[0], sizeof(vtkm::UInt32) * size);
+	std::ifstream cntf;
+	cntf.open("count.dat", std::ios::binary);
+	size_t size = 0;
+	cntf.read((char*)&size, sizeof(size_t));
+	child_cnt.resize(size);
+	cntf.read((char*)&child_cnt[0], sizeof(vtkm::UInt32) * size);
 
-    std::ifstream idxf;
-    idxf.open("index.dat");
-    size = 0;
-    idxf.read((char*)&size, sizeof(size_t));
-    child_idx.resize(size);
-    idxf.read((char*)&child_idx[0], sizeof(vtkm::UInt32) * size);
+	std::ifstream idxf;
+	idxf.open("index.dat", std::ios::binary);
+	size = 0;
+	idxf.read((char*)&size, sizeof(size_t));
+	child_idx.resize(size);
+	idxf.read((char*)&child_idx[0], sizeof(vtkm::UInt32) * size);
 
-    std::ifstream vtxf;
-    vtxf.open("vertex.dat");
-    size = 0;
-    vtxf.read((char*)&size, sizeof(size_t));
-    child_vtx.resize(size);
-    vtxf.read((char*)&child_vtx[0], sizeof(vtkm::UInt32) * size);
+	std::ifstream vtxf;
+	vtxf.open("vertex.dat", std::ios::binary);
+	size = 0;
+	vtxf.read((char*)&size, sizeof(size_t));
+	child_vtx.resize(size);
+	vtxf.read((char*)&child_vtx[0], sizeof(vtkm::UInt32) * size);
+	
 
-    cntArray = vtkm::cont::make_ArrayHandle(&child_cnt[0], child_cnt.size());
+	cntArray = vtkm::cont::make_ArrayHandle(&child_cnt[0], child_cnt.size());
     vtxArray = vtkm::cont::make_ArrayHandle(&child_vtx[0], child_vtx.size());
     idxArray = vtkm::cont::make_ArrayHandle(&child_idx[0], child_idx.size());
 
@@ -73,7 +74,7 @@ int main(int argc, char **argv)
 	std::cout << "done setting the table" << std::endl;
 
     vtkm::rendering::Color bg(0.2f, 0.2f, 0.2f, 1.0f);
-    vtkm::rendering::CanvasRayTracer canvas(4,4);
+    vtkm::rendering::CanvasRayTracer canvas(512,512);
     MapperRayTracer mapper(csg.GetCellSet(), cntArray, idxArray, vtxArray );
 
     vtkm::rendering::Scene scene;
