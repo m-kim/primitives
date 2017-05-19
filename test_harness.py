@@ -10,6 +10,7 @@ F = open('output', 'w')
 
 for t in TYPENAME:
     execname = EXECNAME + t
+    F.writelines(t)
     for w in WIDTH:
         print([execname, str(w)])
         p = Popen([execname, str(w)], stdout=PIPE, stderr=PIPE)
@@ -18,5 +19,6 @@ for t in TYPENAME:
         print(out.decode("utf-8"))
         F.writelines(out.decode("utf-8"))
         print(['mv', 'reg3D.pnm', 'reg3D_' + t + '_' + str(w) + '.pnm'])
-        p = Popen(['mv', 'reg3D.pnm', 'reg3D_' + t + '_' + str(w) + '.pnm'], stdout=PIPE, stderr=PIPE)
+        p = Popen(['convert', 'reg3D.pnm', 'reg3D.png'])
+        p = Popen(['mv', 'reg3D.png', 'reg3D_' + t + '_' + str(w) + '.png'], stdout=PIPE, stderr=PIPE)
 
