@@ -12,7 +12,7 @@
 #include <vtkm/rendering/ColorTable.h>
 #include <iostream>
 #include <fstream>
-#
+#include <chrono>
 
 typedef VTKM_DEFAULT_DEVICE_ADAPTER_TAG DeviceAdapter;
 
@@ -29,7 +29,6 @@ void load(const char *fn)
 	vtkm::io::reader::VTKDataSetReader reader(fn);
 	reader.ReadDataSet();
 	csg = reader.GetDataSet();
-	std::cout << "finished reader" << std::endl;
 	std::ifstream cntf;
 	cntf.open("count.dat", std::ios::binary);
 	size_t size = 0;
@@ -65,16 +64,23 @@ void load(const char *fn)
 
 int main(int argc, char **argv)
   {
+    int width, height;
+
+    if (argc < 1){
+        width = height = 1024;
+
+    }
+    else{
+        width = height = atoi(argv[1]);
+    }
+
 
     treePtr = std::shared_ptr<Tree<DeviceAdapter>>(new Tree<DeviceAdapter>());
-	std::cout << "start" << std::endl;
     load("dataset.vtk");
-	std::cout << "done load" << std::endl;
 
-	std::cout << "done setting the table" << std::endl;
-
+    auto t0 = std::chrono::high_resolution_clock::now();
     vtkm::rendering::Color bg(0.2f, 0.2f, 0.2f, 1.0f);
-    vtkm::rendering::CanvasRayTracer canvas(512,512);
+    vtkm::rendering::CanvasRayTracer canvas(width, height);
     MapperRayTracer mapper(csg.GetCellSet(), cntArray, idxArray, vtxArray );
 
     vtkm::rendering::Scene scene;
@@ -94,12 +100,13 @@ int main(int argc, char **argv)
     //pos[2] += pos[2] * 4.0;
     //new_cam.SetPosition(pos);
 
-    vtkm::Vec<vtkm::Float32,3> wtf(2,2,2);
-	view = new vtkm::rendering::View3D(scene, mapper, canvas, bg);
+    view = new vtkm::rendering::View3D(scene, mapper, canvas, bg);
 
     view->Initialize();
     //glutMainLoop();
-	std::cout << "paint" << std::endl;
     view->Paint();
+    auto t1 = std::chrono::high_resolution_clock::now();
+
+    std::cout << "Finished " << width << ": " << std::chrono::duration<double>(t1-t0).count() << "s" << std::endl;
     view->SaveAs("reg3D.pnm");
-  }
+}
