@@ -218,6 +218,7 @@ t = (nd - mn) / nn;
             vec3 &fin_center,
             vtkm::Float32 &minDistance,
             vtkm::Id &hitIndex,
+            float &matid,
           const Tree<DeviceAdapterTag> &treePtr) const
   {
 
@@ -302,6 +303,7 @@ t = (nd - mn) / nn;
                  ret = cylinder(rayOrigin, rayDir, cyl_bottom, cyl_top, cyl_radius);
                  if (ret[0] > 0) {
                    if (ret[1] < minDistance) {
+                     matid = vtkm::Vec<vtkm::Float32, 3>(points.Get(cur_offset + 2))[0];
                      minDistance = ret[1];
                      hitIndex = 35;
                      fin_type = type;
@@ -316,6 +318,7 @@ t = (nd - mn) / nn;
                  ret = box(rayOrigin, rayDir, box_ll, box_ur);
                  if (ret[0] > 0) {
                    if (ret[1] < minDistance) {
+                     matid = 0.125;
                      minDistance = ret[1];
                      hitIndex = 35;
                      fin_type = type;

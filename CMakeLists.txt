@@ -20,7 +20,7 @@
 ##
 ##=============================================================================
 cmake_minimum_required(VERSION 3.3)
-project(csg_rendering)
+project(primitives_rendering)
 
 
 #Find the VTK-m package

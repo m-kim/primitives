@@ -128,13 +128,6 @@ public:
     {
         float minDistance = MaxDistance;
         hitIndex = -1;
-        float dirx = rayDir[0];
-        float diry = rayDir[1];
-        float dirz = rayDir[2];
-
-        float invDirx = rcp_safe(dirx);
-        float invDiry = rcp_safe(diry);
-        float invDirz = rcp_safe(dirz);
         int currentNode;
 
         int todo[64];
@@ -144,23 +137,11 @@ public:
 
         todo[stackptr] = barrier;
 
-        float originX = rayOrigin[0];
-        float originY = rayOrigin[1];
-        float originZ = rayOrigin[2];
-        float originDirX = originX * invDirx;
-        float originDirY = originY * invDiry;
-        float originDirZ = originZ * invDirz;
-
-
-        vec3 ret;
-    vec3 cyl_top, cyl_bottom;
-    vec3 center;
-    vtkm::Float32 cyl_radius;
-    vec3 box_ll, box_ur;
         vtkm::UInt8 fin_type = 0;
-    vtkm::UInt8 face = 0;
+        vtkm::UInt8 face = 0;
         vtkm::Id fin_offset = 0;
         vec3 fin_center;
+        scalar_out = 0.0;
 #if 0
     for (int i = 0; i< ShapesPortal.GetNumberOfValues(); i++) {
             vtkm::UInt8 type = ShapesPortal.Get(i);
@@ -217,7 +198,7 @@ public:
         }
 
 #else
-    tIPtr.query(points, scalars, rayOrigin, rayDir, fin_type, face,fin_offset, fin_center, minDistance, hitIndex, tree);
+    tIPtr.query(points, scalars, rayOrigin, rayDir, fin_type, face,fin_offset, fin_center, minDistance, hitIndex, scalar_out, tree);
 //    vtkm::UInt8 tree_fin_type = 0;
 //    vtkm::UInt8 tree_face = 0;
 //    vtkm::Id tree_fin_offset = 0, tree_hitIndex;
@@ -234,43 +215,41 @@ public:
 #endif
 
     if (minDistance < MaxDistance) {
-       scalar_out = 1.0;
-      vec3 pos = rayOrigin + rayDir * minDistance;
-            vec3 pt;
-            switch (fin_type) {
+        vec3 pos = rayOrigin + rayDir * minDistance;
+        vec3 pt;
+        switch (fin_type) {
             //cylinder
             case vtkm::CELL_SHAPE_TRIANGLE:
                 pt = vec3(points.Get(fin_offset)[0], pos[1], points.Get(fin_offset)[2]);
-        normal = pos - pt;
-        vtkm::Normalize(normal);
+                normal = pos - pt;
+                vtkm::Normalize(normal);
                 break;
 
             //box
-      case vtkm::CELL_SHAPE_LINE:
-        scalar_out = 0.4;
-        if (face == 0) {
-          normal = vec3(-1.0, 0, 0);
-                }
-        else if (face == 1) {
-          normal = vec3(1.0, 0, 0);
-                }
-        else if (face == 2) {
-          normal = vec3(0.0, -1.0, 0);
-                }
-        else if (face == 3) {
-          normal = vec3(0.0, 1.0, 0);
-                }
-        else if (face == 4) {
-          normal = vec3(0.0, 0.0, -1.0);
-                }
-        else if (face == 5) {
-          normal = vec3(0.0, 0.0, 1.0);
-                }
+            case vtkm::CELL_SHAPE_LINE:
+            if (face == 0) {
+              normal = vec3(-1.0, 0, 0);
+                    }
+            else if (face == 1) {
+              normal = vec3(1.0, 0, 0);
+                    }
+            else if (face == 2) {
+              normal = vec3(0.0, -1.0, 0);
+                    }
+            else if (face == 3) {
+              normal = vec3(0.0, 1.0, 0);
+                    }
+            else if (face == 4) {
+              normal = vec3(0.0, 0.0, -1.0);
+                    }
+            else if (face == 5) {
+              normal = vec3(0.0, 0.0, 1.0);
+                    }
 
                 break;
             //sphere
             case vtkm::CELL_SHAPE_VERTEX:
-        normal = pos - fin_center;
+                normal = pos - fin_center;
                 vtkm::Normalize(normal);
                 break;
             }
